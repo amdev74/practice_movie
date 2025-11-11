@@ -5,6 +5,7 @@ import com.fr.movie_finder.dto.MovieDTO;
 import com.fr.movie_finder.entity.ActorEntity;
 import com.fr.movie_finder.entity.ActorMovieEntity;
 import com.fr.movie_finder.entity.MovieEntity;
+import com.fr.movie_finder.exception.AlreadyExistsException;
 import com.fr.movie_finder.repository.ActorRepository;
 import com.fr.movie_finder.repository.MovieRepository;
 import com.fr.movie_finder.service.MovieService;
@@ -59,6 +60,11 @@ public class MovieServiceImpl implements MovieService {
     @Override
     @Transactional
     public MovieDTO createMovie(MovieDTO movie) throws MethodArgumentNotValidException {
+        Optional<MovieEntity> checkMovie = movieRepository.findFirstByName(movie.name());
+
+        if(checkMovie.isPresent()) {
+            throw new AlreadyExistsException("Movie already exist");
+        }
         MovieEntity movieEntity = new MovieEntity();
 
         movieEntity.setName(movie.name());

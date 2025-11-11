@@ -26,6 +26,15 @@ public class ServiceExceptionHandler {
         return problem;
     }
 
+    @ExceptionHandler(AlreadyExistsException.class)
+    @ResponseStatus(value = HttpStatus.CONFLICT)
+    public ProblemDetail handleEntityAlreadyExist(AlreadyExistsException e) {
+        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+        problem.setTitle("Resource already exist");
+
+        return problem;
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ProblemDetail handleArgumentNotValid(MethodArgumentNotValidException e) {

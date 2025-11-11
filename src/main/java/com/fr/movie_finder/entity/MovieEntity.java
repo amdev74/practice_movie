@@ -7,7 +7,10 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "movies")
+@Table(
+        name = "movies",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"name", "genre", "publication_date"})
+)
 @Setter
 @Getter
 @AllArgsConstructor
