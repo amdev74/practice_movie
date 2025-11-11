@@ -20,4 +20,8 @@ public record ActorDTO(
                 actorEntity.getFirstname(),
                 actorEntity.getLastname());
     }
+
+    public ActorDTO(String firstname, String lastname) {
+        this(null, firstname, lastname);
+    }
 }

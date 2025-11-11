@@ -34,4 +34,8 @@ public record MovieDTO(Long id,
                 entity.getPublicationDate(),
                 entity.getActors().stream().map(actorMovieEntity -> new ActorDTO(actorMovieEntity.getActor())).collect(Collectors.toList()));
     }
+
+    public MovieDTO(String name, Genre genre, Date publicationDate, List<ActorDTO> actors) {
+        this(null, name, genre, publicationDate, actors);
+    }
 }
