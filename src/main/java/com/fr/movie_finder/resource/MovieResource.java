@@ -2,17 +2,21 @@ package com.fr.movie_finder.resource;
 
 import com.fr.movie_finder.dto.MovieDTO;
 import com.fr.movie_finder.service.MovieService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 
 @RestController
 @RequestMapping("/movies")
 public class MovieResource {
 
-    private MovieService movieService;
+    private final MovieService movieService;
 
     public MovieResource(MovieService movieService) {
         this.movieService = movieService;
@@ -24,8 +28,28 @@ public class MovieResource {
     }
 
     @GetMapping
-    public ResponseEntity<List<MovieDTO>> getAllMovies() {
-        return ResponseEntity.ok().body(movieService.getAllMovies());
+    public ResponseEntity<List<MovieDTO>> searchMovies(
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+
+        List<MovieDTO> movies;
+
+        if (startDate != null) {
+            if (endDate == null) {
+                endDate = LocalDate.now();
+            }
+
+            Date start = Date.from(startDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+            Date end = Date.from(endDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+            movies = movieService.getMoviesByStartDateAndEndDate(start, end);
+        } else {
+            movies = movieService.getAllMovies();
+        }
+
+        return ResponseEntity.ok(movies);
     }
 
     @GetMapping("/{name}")
