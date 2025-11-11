@@ -1,0 +1,95 @@
+package com.fr.movie_finder.service.impl;
+
+import com.fr.movie_finder.dto.ActorDTO;
+import com.fr.movie_finder.dto.MovieDTO;
+import com.fr.movie_finder.entity.ActorEntity;
+import com.fr.movie_finder.entity.ActorMovieEntity;
+import com.fr.movie_finder.entity.MovieEntity;
+import com.fr.movie_finder.repository.ActorRepository;
+import com.fr.movie_finder.repository.MovieRepository;
+import com.fr.movie_finder.service.MovieService;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class MovieServiceImpl implements MovieService {
+    private final MovieRepository movieRepository;
+    private final ActorRepository actorRepository;
+
+    public MovieServiceImpl(MovieRepository movieRepository, ActorRepository actorRepository) {
+        this.movieRepository = movieRepository;
+        this.actorRepository = actorRepository;
+    }
+
+    @Transactional
+    @Override
+    public List<MovieDTO> getAllMovies() {
+        List<MovieEntity> moviesEntities = movieRepository.findAll();
+
+        return moviesEntities.stream().map(MovieDTO::new).toList();
+    }
+
+    @Override
+    @Transactional
+    public MovieDTO getMovieByName(String name) throws EntityNotFoundException {
+        Optional<MovieEntity> movieEntity = movieRepository.findFirstByName(name);
+
+        if(movieEntity.isEmpty()) {
+            throw new EntityNotFoundException(String.format("Movie %s not found", name));
+        }
+
+        return new MovieDTO(movieEntity.get());
+    }
+
+    @Override
+    @Transactional
+    public List<MovieDTO> getMoviesByStartDateAndEndDate(Date startDate, Date endDate) {
+        List<MovieEntity> moviesEntities = movieRepository.findAllByPublicationDateGreaterThanEqualAndPublicationDateLessThanEqual(startDate, endDate);
+
+        return moviesEntities.stream().map(MovieDTO::new).toList();
+    }
+
+    @Override
+    @Transactional
+    public MovieDTO createMovie(MovieDTO movie) throws MethodArgumentNotValidException {
+        MovieEntity movieEntity = new MovieEntity();
+
+        movieEntity.setName(movie.name());
+        movieEntity.setGenre(movie.genre());
+        movieEntity.setPublicationDate(movie.publicationDate());
+        movieEntity.setActors(new ArrayList<>());
+
+        movieEntity = movieRepository.save(movieEntity);
+
+        for(ActorDTO actor : movie.actors()) {
+            Optional<ActorEntity> checkActorEntity = actorRepository.findFirstByFirstnameAndLastname(actor.firstname(),actor.lastname());
+            ActorEntity actorEntity = null;
+
+            if(checkActorEntity.isEmpty()) {
+                actorEntity = new ActorEntity();
+                actorEntity.setFirstname(actor.firstname());
+                actorEntity.setLastname(actor.lastname());
+                actorEntity.setMovies(new ArrayList<>());
+                actorEntity = actorRepository.save(actorEntity);
+            } else {
+                actorEntity = checkActorEntity.get();
+            }
+
+            ActorMovieEntity actorMovie = new ActorMovieEntity();
+            actorMovie.setActor(actorEntity);
+            actorMovie.setMovie(movieEntity);
+
+            movieEntity.getActors().add(actorMovie);
+            actorEntity.getMovies().add(actorMovie);
+        }
+
+        return new MovieDTO(movieEntity);
+    }
+}
