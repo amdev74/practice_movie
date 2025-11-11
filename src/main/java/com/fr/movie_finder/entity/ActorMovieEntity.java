@@ -22,4 +22,9 @@ public class ActorMovieEntity {
     @ManyToOne
     @JoinColumn(name = "movie_id")
     private MovieEntity movie;
+
+    public ActorMovieEntity(ActorEntity actor, MovieEntity movie) {
+        this.actor = actor;
+        this.movie = movie;
+    }
 }

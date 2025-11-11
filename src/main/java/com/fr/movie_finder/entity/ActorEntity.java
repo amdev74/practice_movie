@@ -23,4 +23,10 @@ public class ActorEntity {
 
     @OneToMany(mappedBy = "actor", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ActorMovieEntity> movies;
+
+    public ActorEntity(String firstName, String lastName, List<ActorMovieEntity> movies) {
+        this.firstname = firstName;
+        this.lastname = lastName;
+        this.movies = movies;
+    }
 }

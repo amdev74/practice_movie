@@ -65,33 +65,22 @@ public class MovieServiceImpl implements MovieService {
         if(checkMovie.isPresent()) {
             throw new AlreadyExistsException("Movie already exist");
         }
-        MovieEntity movieEntity = new MovieEntity();
 
-        movieEntity.setName(movie.name());
-        movieEntity.setGenre(movie.genre());
-        movieEntity.setPublicationDate(movie.publicationDate());
-        movieEntity.setActors(new ArrayList<>());
-
+        MovieEntity movieEntity = new MovieEntity(movie.name(), movie.genre(),movie.publicationDate(), new ArrayList<>());
         movieEntity = movieRepository.save(movieEntity);
 
         for(ActorDTO actor : movie.actors()) {
             Optional<ActorEntity> checkActorEntity = actorRepository.findFirstByFirstnameAndLastname(actor.firstname(),actor.lastname());
-            ActorEntity actorEntity = null;
+            ActorEntity actorEntity;
 
             if(checkActorEntity.isEmpty()) {
-                actorEntity = new ActorEntity();
-                actorEntity.setFirstname(actor.firstname());
-                actorEntity.setLastname(actor.lastname());
-                actorEntity.setMovies(new ArrayList<>());
+                actorEntity = new ActorEntity(actor.firstname(), actor.lastname(), new ArrayList<>());
                 actorEntity = actorRepository.save(actorEntity);
             } else {
                 actorEntity = checkActorEntity.get();
             }
 
-            ActorMovieEntity actorMovie = new ActorMovieEntity();
-            actorMovie.setActor(actorEntity);
-            actorMovie.setMovie(movieEntity);
-
+            ActorMovieEntity actorMovie = new ActorMovieEntity(actorEntity, movieEntity);
             movieEntity.getActors().add(actorMovie);
             actorEntity.getMovies().add(actorMovie);
         }

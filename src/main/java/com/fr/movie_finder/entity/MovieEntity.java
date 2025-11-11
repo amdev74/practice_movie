@@ -30,4 +30,10 @@ public class MovieEntity {
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ActorMovieEntity> actors;
 
+    public MovieEntity(String name, Genre genre, Date publicationDate, List<ActorMovieEntity> actors) {
+        this.name = name;
+        this.genre = genre;
+        this.publicationDate = publicationDate;
+        this.actors = actors;
+    }
 }
