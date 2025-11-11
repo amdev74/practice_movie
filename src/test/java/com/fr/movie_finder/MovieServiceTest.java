@@ -3,6 +3,7 @@ package com.fr.movie_finder;
 import com.fr.movie_finder.dto.ActorDTO;
 import com.fr.movie_finder.dto.MovieDTO;
 import com.fr.movie_finder.entity.Genre;
+import com.fr.movie_finder.exception.AlreadyExistsException;
 import com.fr.movie_finder.service.MovieService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -17,6 +19,7 @@ import java.util.Date;
 import java.util.List;
 import org.slf4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 @SpringBootTest
 @Transactional
@@ -46,6 +49,20 @@ class MovieServiceTests {
                 .toInstant());
         movieSw = new MovieDTO("L'empire contre-attaque", Genre.SF, publicationDateV, List.of(actor1, actor2, actor3));
         movieService.createMovie(movieSw);
+    }
+
+    @Test
+    void testCreateMovieShouldReturnAlreadyExist() throws MethodArgumentNotValidException {
+        ActorDTO actor1 = new ActorDTO("Mark", "Hamill");
+        ActorDTO actor2 = new ActorDTO("Harrison", "Ford");
+        Date publicationDate = Date.from(LocalDate.of(1977, 5, 25)
+                .atStartOfDay(ZoneId.systemDefault())
+                .toInstant());
+        MovieDTO movieSwDuplicated = new MovieDTO("Un nouvel espoir", Genre.SF, publicationDate, List.of(actor1, actor2));
+
+        assertThrows(AlreadyExistsException.class, () -> {
+            movieService.createMovie(movieSwDuplicated);
+        });
     }
 
     @Test
