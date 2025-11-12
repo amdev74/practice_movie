@@ -23,9 +23,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 
 @SpringBootTest
 @Transactional
-class MovieServiceTests {
+class MovieServiceTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(MovieServiceTests.class);
+    private static final Logger logger = LoggerFactory.getLogger(MovieServiceTest.class);
 
     @Autowired
     private MovieService movieService;
