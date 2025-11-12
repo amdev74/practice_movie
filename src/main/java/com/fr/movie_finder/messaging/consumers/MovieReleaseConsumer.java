@@ -1,8 +1,8 @@
 package com.fr.movie_finder.messaging.consumers;
 
 import com.fr.movie_finder.dto.MovieDTO;
+import com.fr.movie_finder.mapper.MovieMapper;
 import com.fr.movie_finder.messaging.events.MovieReleaseEvent;
-import com.fr.movie_finder.messaging.events.mapper.MovieEventMapper;
 import com.fr.movie_finder.service.MovieService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,18 +15,18 @@ public class MovieReleaseConsumer {
 
     Logger logger = LoggerFactory.getLogger(MovieReleaseConsumer.class);
 
-    private final MovieEventMapper movieEventMapper;
+    private final MovieMapper movieMapper;
     private final MovieService movieService;
 
-    public MovieReleaseConsumer(MovieEventMapper movieEventMapper, MovieService movieService) {
-        this.movieEventMapper = movieEventMapper;
+    public MovieReleaseConsumer(MovieMapper movieMapper, MovieService movieService) {
+        this.movieMapper = movieMapper;
         this.movieService = movieService;
     }
 
     @KafkaListener(topics = "movie-releases", groupId = "movie-finder-group")
     public void consume(MovieReleaseEvent event) throws MethodArgumentNotValidException {
         logger.info("Consume event movie-release with payload : {}", event.getPayload());
-        MovieDTO movie = movieEventMapper.toDTO(event.getPayload());
+        MovieDTO movie = movieMapper.toDTO(event.getPayload());
         movieService.createMovie(movie);
     }
 }

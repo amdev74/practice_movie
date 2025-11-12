@@ -6,6 +6,7 @@ import com.fr.movie_finder.entity.ActorEntity;
 import com.fr.movie_finder.entity.ActorMovieEntity;
 import com.fr.movie_finder.entity.MovieEntity;
 import com.fr.movie_finder.exception.AlreadyExistsException;
+import com.fr.movie_finder.mapper.MovieMapper;
 import com.fr.movie_finder.repository.ActorRepository;
 import com.fr.movie_finder.repository.MovieRepository;
 import com.fr.movie_finder.service.MovieService;
@@ -23,10 +24,14 @@ import java.util.Optional;
 public class MovieServiceImpl implements MovieService {
     private final MovieRepository movieRepository;
     private final ActorRepository actorRepository;
+    private final MovieMapper movieMapper;
 
-    public MovieServiceImpl(MovieRepository movieRepository, ActorRepository actorRepository) {
+    public MovieServiceImpl(MovieRepository movieRepository,
+                            ActorRepository actorRepository,
+                            MovieMapper movieMapper) {
         this.movieRepository = movieRepository;
         this.actorRepository = actorRepository;
+        this.movieMapper = movieMapper;
     }
 
     @Transactional
@@ -34,7 +39,7 @@ public class MovieServiceImpl implements MovieService {
     public List<MovieDTO> getAllMovies() {
         List<MovieEntity> moviesEntities = movieRepository.findAll();
 
-        return moviesEntities.stream().map(MovieDTO::new).toList();
+        return moviesEntities.stream().map(movieMapper::toDTO).toList();
     }
 
     @Override
@@ -46,7 +51,7 @@ public class MovieServiceImpl implements MovieService {
             throw new EntityNotFoundException(String.format("Movie %s not found", name));
         }
 
-        return new MovieDTO(movieEntity.get());
+        return movieMapper.toDTO(movieEntity.get());
     }
 
     @Override
@@ -54,7 +59,7 @@ public class MovieServiceImpl implements MovieService {
     public List<MovieDTO> getMoviesByStartDateAndEndDate(LocalDate startDate, LocalDate endDate) {
         List<MovieEntity> moviesEntities = movieRepository.findAllByPublicationDateGreaterThanEqualAndPublicationDateLessThanEqual(startDate, endDate);
 
-        return moviesEntities.stream().map(MovieDTO::new).toList();
+        return moviesEntities.stream().map(movieMapper::toDTO).toList();
     }
 
     @Override
@@ -85,6 +90,6 @@ public class MovieServiceImpl implements MovieService {
             actorEntity.getMovies().add(actorMovie);
         }
 
-        return new MovieDTO(movieEntity);
+        return movieMapper.toDTO(movieEntity);
     }
 }

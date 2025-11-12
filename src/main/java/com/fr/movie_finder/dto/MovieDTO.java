@@ -28,14 +28,6 @@ public record MovieDTO(Long id,
                        @NotEmpty(message = "Actors list must not be empty")
                        @Valid
                        List<ActorDTO> actors) {
-    public MovieDTO(MovieEntity entity) {
-        this(entity.getId(),
-                entity.getName(),
-                entity.getGenre(),
-                entity.getPublicationDate(),
-                entity.getActors().stream().map(actorMovieEntity -> new ActorDTO(actorMovieEntity.getActor())).collect(Collectors.toList()));
-    }
-
     public MovieDTO(String name, Genre genre, LocalDate publicationDate, List<ActorDTO> actors) {
         this(null, name, genre, publicationDate, actors);
     }

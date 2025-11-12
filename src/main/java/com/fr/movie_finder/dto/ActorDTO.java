@@ -12,12 +12,6 @@ public record ActorDTO(
         @NotBlank(message = "Actor last name is required")
         String lastname) {
 
-    public ActorDTO(ActorEntity actorEntity) {
-        this(actorEntity.getId(),
-                actorEntity.getFirstname(),
-                actorEntity.getLastname());
-    }
-
     public ActorDTO(String firstname, String lastname) {
         this(null, firstname, lastname);
     }
