@@ -12,13 +12,16 @@ import java.util.List;
 @EqualsAndHashCode
 @Getter
 @Setter
+@ToString
 public class ActorEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(nullable = false)
     private String firstname;
 
+    @Column(nullable = false)
     private String lastname;
 
     @OneToMany(mappedBy = "actor", cascade = CascadeType.ALL, orphanRemoval = true)

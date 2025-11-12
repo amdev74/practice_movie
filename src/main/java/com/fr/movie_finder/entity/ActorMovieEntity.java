@@ -10,6 +10,7 @@ import lombok.*;
 @Getter
 @Setter
 @EqualsAndHashCode
+@ToString
 public class ActorMovieEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
