@@ -5,6 +5,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -14,6 +15,6 @@ public interface MovieService {
     List<MovieDTO> getAllMovies();
 
     MovieDTO getMovieByName(String name) throws EntityNotFoundException;
-    List<MovieDTO> getMoviesByStartDateAndEndDate(Date startDate, Date endDate) throws EntityNotFoundException;;
+    List<MovieDTO> getMoviesByStartDateAndEndDate(LocalDate startDate, LocalDate endDate) throws EntityNotFoundException;;
     MovieDTO createMovie(MovieDTO movie) throws MethodArgumentNotValidException;
 }

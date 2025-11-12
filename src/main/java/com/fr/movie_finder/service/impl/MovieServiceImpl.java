@@ -14,8 +14,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,7 +51,7 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     @Transactional
-    public List<MovieDTO> getMoviesByStartDateAndEndDate(Date startDate, Date endDate) {
+    public List<MovieDTO> getMoviesByStartDateAndEndDate(LocalDate startDate, LocalDate endDate) {
         List<MovieEntity> moviesEntities = movieRepository.findAllByPublicationDateGreaterThanEqualAndPublicationDateLessThanEqual(startDate, endDate);
 
         return moviesEntities.stream().map(MovieDTO::new).toList();

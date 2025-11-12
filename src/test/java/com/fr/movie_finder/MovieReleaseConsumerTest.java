@@ -46,9 +46,7 @@ class MovieReleaseConsumerTest {
         MoviePayload moviePayload = new MoviePayload();
         moviePayload.setName("Saving Private Ryan");
         moviePayload.setGenre(Genre.ACTION);
-        moviePayload.setPublicationDate(Date.from(LocalDate.of(1998, 7, 24)
-                .atStartOfDay(ZoneId.systemDefault())
-                .toInstant()));
+        moviePayload.setPublicationDate(LocalDate.of(1998, 9, 30));
 
         moviePayload.setActors(actors);
 

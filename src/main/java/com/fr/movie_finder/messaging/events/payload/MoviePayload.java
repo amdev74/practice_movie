@@ -4,6 +4,7 @@ import com.fr.movie_finder.entity.Genre;
 import com.fr.movie_finder.messaging.events.MovieReleaseEvent;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -16,6 +17,6 @@ import java.util.List;
 public class MoviePayload {
     private String name;
     private Genre genre;
-    private Date publicationDate;
+    private LocalDate publicationDate;
     private List<ActorPayload> actors;
 }

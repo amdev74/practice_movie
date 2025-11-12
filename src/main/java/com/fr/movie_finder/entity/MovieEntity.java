@@ -3,6 +3,7 @@ package com.fr.movie_finder.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -25,12 +26,12 @@ public class MovieEntity {
 
     private Genre genre;
 
-    private Date publicationDate;
+    private LocalDate publicationDate;
 
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ActorMovieEntity> actors;
 
-    public MovieEntity(String name, Genre genre, Date publicationDate, List<ActorMovieEntity> actors) {
+    public MovieEntity(String name, Genre genre, LocalDate publicationDate, List<ActorMovieEntity> actors) {
         this.name = name;
         this.genre = genre;
         this.publicationDate = publicationDate;

@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.Valid;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,7 +22,7 @@ public record MovieDTO(Long id,
                        Genre genre,
 
                        @NotNull(message = "Publication date must not be null")
-                       Date publicationDate,
+                       LocalDate publicationDate,
 
                        @NotNull(message = "Actors list must not be null")
                        @NotEmpty(message = "Actors list must not be empty")
@@ -35,7 +36,7 @@ public record MovieDTO(Long id,
                 entity.getActors().stream().map(actorMovieEntity -> new ActorDTO(actorMovieEntity.getActor())).collect(Collectors.toList()));
     }
 
-    public MovieDTO(String name, Genre genre, Date publicationDate, List<ActorDTO> actors) {
+    public MovieDTO(String name, Genre genre, LocalDate publicationDate, List<ActorDTO> actors) {
         this(null, name, genre, publicationDate, actors);
     }
 }

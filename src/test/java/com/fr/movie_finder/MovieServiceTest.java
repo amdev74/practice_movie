@@ -36,18 +36,14 @@ class MovieServiceTest {
     void setup() throws Exception {
         ActorDTO actor1 = new ActorDTO("Mark", "Hamill");
         ActorDTO actor2 = new ActorDTO("Harrison", "Ford");
-        Date publicationDate = Date.from(LocalDate.of(1977, 5, 25)
-                .atStartOfDay(ZoneId.systemDefault())
-                .toInstant());
+        LocalDate publicationDate = LocalDate.of(1977, 5, 25);
         movieSw = new MovieDTO("Un nouvel espoir", Genre.SF, publicationDate, List.of(actor1, actor2));
         movieService.createMovie(movieSw);
 
         ActorDTO actor3 = new ActorDTO("Carry", "Fisher");
 
-        Date publicationDateV = Date.from(LocalDate.of(1980, 5, 25)
-                .atStartOfDay(ZoneId.systemDefault())
-                .toInstant());
-        movieSw = new MovieDTO("L'empire contre-attaque", Genre.SF, publicationDateV, List.of(actor1, actor2, actor3));
+        LocalDate publicationDateV = LocalDate.of(1980, 5, 25);
+        movieSw = new MovieDTO("L'empire contre-attaque", Genre.SF, publicationDate, List.of(actor1, actor2, actor3));
         movieService.createMovie(movieSw);
     }
 
@@ -55,9 +51,7 @@ class MovieServiceTest {
     void testCreateMovieShouldReturnAlreadyExist() throws MethodArgumentNotValidException {
         ActorDTO actor1 = new ActorDTO("Mark", "Hamill");
         ActorDTO actor2 = new ActorDTO("Harrison", "Ford");
-        Date publicationDate = Date.from(LocalDate.of(1977, 5, 25)
-                .atStartOfDay(ZoneId.systemDefault())
-                .toInstant());
+        LocalDate publicationDate = LocalDate.of(1977, 5, 25);
         MovieDTO movieSwDuplicated = new MovieDTO("Un nouvel espoir", Genre.SF, publicationDate, List.of(actor1, actor2));
 
         assertThrows(AlreadyExistsException.class, () -> {
@@ -91,13 +85,9 @@ class MovieServiceTest {
 
     @Test
     void testGetMoviesBetweenDate() {
-        Date start = Date.from(LocalDate.of(1970, 1, 1)
-                .atStartOfDay(ZoneId.systemDefault())
-                .toInstant());
+        LocalDate start = LocalDate.of(1970, 1, 1);
 
-        Date end = Date.from(LocalDate.of(1990, 1, 1)
-                .atStartOfDay(ZoneId.systemDefault())
-                .toInstant());
+        LocalDate end = LocalDate.of(1990, 1, 1);
 
         List<MovieDTO> retrieved = movieService.getMoviesByStartDateAndEndDate(start, end);
 

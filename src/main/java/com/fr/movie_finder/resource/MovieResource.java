@@ -41,10 +41,7 @@ public class MovieResource {
                 endDate = LocalDate.now();
             }
 
-            Date start = Date.from(startDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-            Date end = Date.from(endDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-
-            movies = movieService.getMoviesByStartDateAndEndDate(start, end);
+            movies = movieService.getMoviesByStartDateAndEndDate(startDate, endDate);
         } else {
             movies = movieService.getAllMovies();
         }
