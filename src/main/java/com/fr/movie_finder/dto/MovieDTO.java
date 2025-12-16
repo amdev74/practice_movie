@@ -1,7 +1,6 @@
 package com.fr.movie_finder.dto;
 
 import com.fr.movie_finder.entity.Genre;
-import com.fr.movie_finder.entity.MovieEntity;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -9,9 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.Valid;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public record MovieDTO(Long id,
 

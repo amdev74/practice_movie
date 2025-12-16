@@ -6,7 +6,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 public interface MovieService {

@@ -1,6 +1,5 @@
 package com.fr.movie_finder.configuration;
 
-import com.fr.movie_finder.messaging.events.MovieReleaseEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

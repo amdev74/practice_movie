@@ -1,6 +1,5 @@
 package com.fr.movie_finder.dto;
 
-import com.fr.movie_finder.entity.ActorEntity;
 import jakarta.validation.constraints.NotBlank;
 
 public record ActorDTO(

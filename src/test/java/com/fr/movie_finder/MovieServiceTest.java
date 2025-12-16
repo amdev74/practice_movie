@@ -14,8 +14,6 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.List;
 import org.slf4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
