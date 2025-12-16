@@ -6,6 +6,7 @@ import com.fr.movie_finder.entity.ActorEntity;
 import com.fr.movie_finder.entity.ActorMovieEntity;
 import com.fr.movie_finder.entity.MovieEntity;
 import com.fr.movie_finder.exception.AlreadyExistsException;
+import com.fr.movie_finder.exception.ErrorMessages;
 import com.fr.movie_finder.mapper.MovieMapper;
 import com.fr.movie_finder.repository.ActorRepository;
 import com.fr.movie_finder.repository.MovieRepository;
@@ -45,13 +46,10 @@ public class MovieServiceImpl implements MovieService {
     @Override
     @Transactional
     public MovieDTO getMovieByName(String name) throws EntityNotFoundException {
-        Optional<MovieEntity> movieEntity = movieRepository.findFirstByName(name);
 
-        if(movieEntity.isEmpty()) {
-            throw new EntityNotFoundException(String.format("Movie %s not found", name));
-        }
-
-        return movieMapper.toDTO(movieEntity.get());
+        return movieRepository.findFirstByName(name)
+                .map(movieMapper::toDTO)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.MOVIE_NOT_FOUND));
     }
 
     @Override
@@ -65,31 +63,27 @@ public class MovieServiceImpl implements MovieService {
     @Override
     @Transactional
     public MovieDTO createMovie(MovieDTO movie) throws MethodArgumentNotValidException {
-        Optional<MovieEntity> checkMovie = movieRepository.findFirstByName(movie.name());
+        movieRepository.findFirstByName(movie.name())
+                .ifPresent(m -> { throw new AlreadyExistsException(ErrorMessages.MOVIE_ALREADY_EXIST); });
 
-        if(checkMovie.isPresent()) {
-            throw new AlreadyExistsException("Movie already exist");
-        }
+        MovieEntity movieEntity = movieRepository.save(
+                new MovieEntity(movie.name(), movie.genre(), movie.publicationDate(), new ArrayList<>())
+        );
 
-        MovieEntity movieEntity = new MovieEntity(movie.name(), movie.genre(),movie.publicationDate(), new ArrayList<>());
-        movieEntity = movieRepository.save(movieEntity);
-
-        for(ActorDTO actor : movie.actors()) {
-            Optional<ActorEntity> checkActorEntity = actorRepository.findFirstByFirstnameAndLastname(actor.firstname(),actor.lastname());
-            ActorEntity actorEntity;
-
-            if(checkActorEntity.isEmpty()) {
-                actorEntity = new ActorEntity(actor.firstname(), actor.lastname(), new ArrayList<>());
-                actorEntity = actorRepository.save(actorEntity);
-            } else {
-                actorEntity = checkActorEntity.get();
-            }
-
-            ActorMovieEntity actorMovie = new ActorMovieEntity(actorEntity, movieEntity);
-            movieEntity.getActors().add(actorMovie);
-            actorEntity.getMovies().add(actorMovie);
-        }
+        movie.actors().stream()
+                .map(this::findOrCreateActor)
+                .map(actor -> new ActorMovieEntity(actor,movieEntity))
+                .forEach(actorMovie -> {
+                    movieEntity.getActors().add(actorMovie);
+                    actorMovie.getActor().getMovies().add(actorMovie);
+                });
 
         return movieMapper.toDTO(movieEntity);
     }
+
+    private ActorEntity findOrCreateActor(ActorDTO actor) {
+        return actorRepository.findFirstByFirstnameAndLastname(actor.firstname(),actor.lastname())
+                .orElseGet(() -> actorRepository.save(new ActorEntity(actor.firstname(), actor.lastname(), new ArrayList<>())));
+    }
 }
+
