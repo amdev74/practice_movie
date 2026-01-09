@@ -19,7 +19,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class MovieServiceImpl implements MovieService {
@@ -62,7 +61,7 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     @Transactional
-    public MovieDTO createMovie(MovieDTO movie) throws MethodArgumentNotValidException {
+    public MovieDTO createMovie(MovieDTO movie) {
         movieRepository.findFirstByName(movie.name())
                 .ifPresent(m -> { throw new AlreadyExistsException(ErrorMessages.MOVIE_ALREADY_EXIST); });
 
@@ -84,6 +83,59 @@ public class MovieServiceImpl implements MovieService {
     private ActorEntity findOrCreateActor(ActorDTO actor) {
         return actorRepository.findFirstByFirstnameAndLastname(actor.firstname(),actor.lastname())
                 .orElseGet(() -> actorRepository.save(new ActorEntity(actor.firstname(), actor.lastname(), new ArrayList<>())));
+    }
+
+    @Transactional
+    @Override
+    public MovieDTO updateMovie(Long id, MovieDTO movieDTO) {
+        MovieEntity existingMovie = movieRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.MOVIE_NOT_FOUND));
+
+        checkForDuplicateName(movieDTO.name(), id);
+
+        existingMovie.setName(movieDTO.name());
+        existingMovie.setGenre(movieDTO.genre());
+        existingMovie.setPublicationDate(movieDTO.publicationDate());
+
+        synchronizeActors(existingMovie, movieDTO.actors());
+
+        return movieMapper.toDTO(existingMovie);
+    }
+
+    @Transactional
+    @Override
+    public void deleteMovie(Long id) {
+        MovieEntity movie = movieRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.MOVIE_NOT_FOUND));
+
+        removeAllActorAssociations(movie);
+        movieRepository.delete(movie);
+    }
+
+    private void checkForDuplicateName(String name, Long excludedId) {
+        movieRepository.findFirstByName(name)
+                .filter(existing -> !existing.getId().equals(excludedId))
+                .ifPresent(m -> { throw new AlreadyExistsException(ErrorMessages.MOVIE_ALREADY_EXIST); });
+    }
+
+    private void synchronizeActors(MovieEntity movie, List<ActorDTO> newActors) {
+        // Remove existing associations (both sides of the relationship)
+        removeAllActorAssociations(movie);
+
+        // Add new associations
+        newActors.stream()
+                .map(this::findOrCreateActor)
+                .map(actor -> new ActorMovieEntity(actor, movie))
+                .forEach(actorMovie -> {
+                    movie.getActors().add(actorMovie);
+                    actorMovie.getActor().getMovies().add(actorMovie);
+                });
+    }
+
+    private void removeAllActorAssociations(MovieEntity movie) {
+        movie.getActors().forEach(actorMovie ->
+                actorMovie.getActor().getMovies().remove(actorMovie));
+        movie.getActors().clear();
     }
 }
 

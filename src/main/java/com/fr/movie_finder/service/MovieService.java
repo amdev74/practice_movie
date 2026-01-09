@@ -15,5 +15,11 @@ public interface MovieService {
 
     MovieDTO getMovieByName(String name) throws EntityNotFoundException;
     List<MovieDTO> getMoviesByStartDateAndEndDate(LocalDate startDate, LocalDate endDate) throws EntityNotFoundException;;
-    MovieDTO createMovie(MovieDTO movie) throws MethodArgumentNotValidException;
+    MovieDTO createMovie(MovieDTO movie);
+
+    @Transactional
+    MovieDTO updateMovie(Long id, MovieDTO movieDTO);
+
+    @Transactional
+    void deleteMovie(Long id);
 }
