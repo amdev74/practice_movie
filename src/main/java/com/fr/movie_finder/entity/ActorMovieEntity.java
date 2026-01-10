@@ -5,12 +5,8 @@ import lombok.*;
 
 @Entity
 @Table(name = "actor_movie")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@EqualsAndHashCode
-@ToString
+@AllArgsConstructor @NoArgsConstructor
+@Getter @Setter
 public class ActorMovieEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -27,5 +23,17 @@ public class ActorMovieEntity {
     public ActorMovieEntity(ActorEntity actor, MovieEntity movie) {
         this.actor = actor;
         this.movie = movie;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ActorMovieEntity other)) return false;
+        return id != null && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

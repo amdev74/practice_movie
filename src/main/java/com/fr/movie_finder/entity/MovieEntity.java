@@ -11,12 +11,8 @@ import java.util.List;
         name = "movies",
         uniqueConstraints = @UniqueConstraint(columnNames = {"name", "genre", "publication_date"})
 )
-@Setter
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
-@EqualsAndHashCode
-@ToString
+@AllArgsConstructor @NoArgsConstructor
+@Getter @Setter
 public class MovieEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -39,5 +35,17 @@ public class MovieEntity {
         this.genre = genre;
         this.publicationDate = publicationDate;
         this.actors = actors;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MovieEntity other)) return false;
+        return id != null && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

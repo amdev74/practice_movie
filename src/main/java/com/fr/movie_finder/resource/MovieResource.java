@@ -4,6 +4,7 @@ import com.fr.movie_finder.dto.MovieDTO;
 import com.fr.movie_finder.service.MovieService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -84,7 +85,11 @@ public class MovieResource {
             @ApiResponse(
                     responseCode = "200",
                     description = "Movies retrieved successfully",
-                    content = @Content(schema = @Schema(implementation = MovieDTO.class))
+                    content = @Content(
+                            array = @ArraySchema(
+                                    schema = @Schema(implementation = MovieDTO.class)
+                            )
+                    )
             ),
             @ApiResponse(
                     responseCode = "400",
