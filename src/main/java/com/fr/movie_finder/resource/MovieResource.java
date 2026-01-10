@@ -14,7 +14,6 @@ import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -109,24 +108,15 @@ public class MovieResource {
     })
     @GetMapping
     public ResponseEntity<List<MovieDTO>> searchMovies(
-            @Parameter(description = "Filter movies published on or after this date (ISO format: yyyy-MM-dd)")
+            @RequestParam(required = false) String name,
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-
-            @Parameter(description = "Filter movies published on or before this date (ISO format: yyyy-MM-dd)")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
-        List<MovieDTO> movies;
-
-        if (startDate != null) {
-            LocalDate effectiveEndDate = (endDate != null) ? endDate : LocalDate.now();
-            movies = movieService.getMoviesByStartDateAndEndDate(startDate, effectiveEndDate);
-        } else {
-            movies = movieService.getAllMovies();
-        }
-
-        return ResponseEntity.ok(movies);
+        return ResponseEntity.ok(
+                movieService.searchMovies(name, startDate, endDate)
+        );
     }
 
     @Operation(

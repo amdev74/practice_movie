@@ -2,7 +2,12 @@ package com.fr.movie_finder.entity;
 
 public enum Genre {
     ACTION,
+    COMEDY,
     DRAMA,
     HORROR,
-    SF
+    ROMANCE,
+    SF,
+    THRILLER,
+    ANIMATION,
+    DOCUMENTARY
 }

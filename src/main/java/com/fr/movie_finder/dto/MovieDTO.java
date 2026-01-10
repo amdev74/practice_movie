@@ -15,10 +15,10 @@ public record MovieDTO(Long id,
                        @NotBlank(message = "name is required")
                        String name,
 
-                       @NotBlank(message = "genre is required")
+                       @NotNull(message = "genre is required")
                        Genre genre,
 
-                       @NotBlank(message = "publication date is required")
+                       @NotNull(message = "publication date is required")
                        LocalDate publicationDate,
 
                        @NotNull(message = "Actors list must not be null")

@@ -10,33 +10,31 @@ import com.fr.movie_finder.exception.ErrorMessages;
 import com.fr.movie_finder.mapper.MovieMapper;
 import com.fr.movie_finder.repository.ActorRepository;
 import com.fr.movie_finder.repository.MovieRepository;
+import com.fr.movie_finder.repository.specification.MovieSpecificationBuilder;
 import com.fr.movie_finder.service.MovieService;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
+@Transactional(readOnly = true)
 public class MovieServiceImpl implements MovieService {
     private final MovieRepository movieRepository;
     private final ActorRepository actorRepository;
     private final MovieMapper movieMapper;
 
-    public MovieServiceImpl(MovieRepository movieRepository,
-                            ActorRepository actorRepository,
-                            MovieMapper movieMapper) {
-        this.movieRepository = movieRepository;
-        this.actorRepository = actorRepository;
-        this.movieMapper = movieMapper;
-    }
-
     @Transactional
     @Override
-    public List<MovieDTO> getAllMovies() {
+    public List<MovieDTO> findAllMovies() {
         List<MovieEntity> moviesEntities = movieRepository.findAll();
 
         return moviesEntities.stream().map(movieMapper::toDTO).toList();
@@ -49,14 +47,6 @@ public class MovieServiceImpl implements MovieService {
         return movieRepository.findFirstByName(name)
                 .map(movieMapper::toDTO)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.MOVIE_NOT_FOUND));
-    }
-
-    @Override
-    @Transactional
-    public List<MovieDTO> getMoviesByStartDateAndEndDate(LocalDate startDate, LocalDate endDate) {
-        List<MovieEntity> moviesEntities = movieRepository.findAllByPublicationDateGreaterThanEqualAndPublicationDateLessThanEqual(startDate, endDate);
-
-        return moviesEntities.stream().map(movieMapper::toDTO).toList();
     }
 
     @Override
@@ -110,6 +100,20 @@ public class MovieServiceImpl implements MovieService {
 
         removeAllActorAssociations(movie);
         movieRepository.delete(movie);
+    }
+
+    public List<MovieDTO> searchMovies(String name, LocalDate startDate, LocalDate endDate) {
+
+        Specification<MovieEntity> specification = new MovieSpecificationBuilder()
+                .withName(name)
+                .publishedAfter(startDate)
+                .publishedBefore(endDate)
+                .build();
+
+        return movieRepository.findAll(specification)
+                .stream()
+                .map(movieMapper::toDTO)
+                .toList();
     }
 
     private void checkForDuplicateName(String name, Long excludedId) {

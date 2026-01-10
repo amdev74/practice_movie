@@ -74,7 +74,7 @@ class MovieServiceTest {
 
     @Test
     void testGetMovies() {
-        List<MovieDTO> retrieved = movieService.getAllMovies();
+        List<MovieDTO> retrieved = movieService.findAllMovies();
 
         retrieved.forEach(movie -> logger.info(String.valueOf(movie)));
 
@@ -87,7 +87,7 @@ class MovieServiceTest {
 
         LocalDate end = LocalDate.of(1990, 1, 1);
 
-        List<MovieDTO> retrieved = movieService.getMoviesByStartDateAndEndDate(start, end);
+        List<MovieDTO> retrieved = movieService.findMoviesByStartDateAndEndDate(start, end);
 
         retrieved.forEach(movie -> logger.info(String.valueOf(movie)));
 
